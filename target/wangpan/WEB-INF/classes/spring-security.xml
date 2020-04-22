@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+             xmlns:beans="http://www.springframework.org/schema/beans"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+       http://www.springframework.org/schema/security
+       http://www.springframework.org/schema/security/spring-security-4.2.xsd">
+
+    <!--将这些资源路径设置为不被拦截-->
+<!--    <http security="none" pattern="/html/login.html"/>-->
+<!--    <http security="none" pattern="/html/failure.html"/>-->
+<!--    <http security="none" pattern="/css/**"/>-->
+<!--    <http security="none" pattern="/plugin/**"/>-->
+<!--    <http security="none" pattern="/error/**"/>-->
+    <http security="none" pattern="/WEB-INF/pages/**"/>
+    <http security="none" pattern="/bootstrap/**"/>
+    <http security="none" pattern="/css/**"/>
+    <http security="none" pattern="/image/**"/>
+    <http security="none" pattern="/javascript/**"/>
+    <http security="none" pattern="/jQuery/**"/>
+    <http security="none" pattern="/login.jsp"/>
+    <http security="none" pattern="/layui/**"/>
+
+
+    <!--    <http security="none" pattern="/ligen/**"/>-->
+
+
+
+    <!--页面的拦截规则
+    use-expressions：是否使用SPEL表达式，默认是true
+    -->
+    <http auto-config="true" use-expressions="true">
+        <!--路径'/admin/*'需要权限ROLE_ADMIN-->
+        <!--<security:intercept-url pattern="/admin/**" access="ROLE_ADMIN"/>-->
+        <!--以"/user"开头的所有路径需要ROLE_USER权限-->
+        <!--<security:intercept-url pattern="/user/**" access="ROLE_USER"/>-->
+
+        <!--配置需要拦截的url，pattern：拦截路径，access：允许访问的权限-->
+        <intercept-url pattern="/pages/register.jsp" access="permitAll()"/>
+        <intercept-url pattern="/user/register" access="permitAll()"/>
+
+        <intercept-url pattern="/login/**" access="permitAll()"/>
+        <intercept-url pattern="/login/logout" access="hasAnyRole('ROLE_USER','ROLE_ADMIN')"/>
+        <intercept-url pattern="/admin/**" access="hasRole('ROLE_ADMIN')"/>
+<!--        <intercept-url pattern="/pages/**" access="hasAnyRole('ROLE_USER','ROLE_ADMIN')"/>-->
+        <intercept-url pattern="/pages/index.jsp" access="hasRole('ROLE_USER')"/>
+        <intercept-url pattern="/pages/useredit.jsp" access="hasRole('ROLE_USER')"/>
+        <intercept-url pattern="/pages/success.jsp" access="hasRole('ROLE_USER')"/>
+        <intercept-url pattern="/pages/file_upload.jsp" access="hasRole('ROLE_USER')"/>
+        <intercept-url pattern="/pages/**" access="hasRole('ROLE_ADMIN')"/>
+        <intercept-url pattern="/user/**" access="hasRole('ROLE_USER')"/>
+        <intercept-url pattern="/file/**" access="hasRole('ROLE_USER')"/>
+<!--        <intercept-url pattern="/**" access="hasAnyRole('ROLE_USER','ROLE_ADMIN')"/>-->
+
+        <!--
+            login-page="/login.html"：配置自定义的登录页面login.html
+            login-processing-url="/login"：表示登录时提交的地址为"/login"
+            username-parameter：表示登录时用户名使用的是哪个参数
+            password-parameter：表示登录时密码使用的是哪个参数
+            default-target-url：
+                默认情况下，在登录成功后会返回到原本受限制的页面
+                如果用户是直接请求登录页面，登录成功后默认情况下会跳转到当前应用的根路径，即欢迎页面
+                default-target-url 属性可以指定，用户直接访问登录页面并登陆成功后跳转的页面
+                如果想让用户不管是直接请求登录页面，还是通过 Spring Security 引导过来的，登录之后都跳转到指定的页面，可以使用 always-use-default-target 属性为 true 来达到这一效果
+            authentication-success-handler-ref：
+                对应一个 AuthencticationSuccessHandler 实现类的引用
+                登录认证成功后会调用指定 AuthenticationSuccessHandler 的 onAuthenticationSuccess 方法，在此方法中进行登陆成功后的处理
+                此时 default-target-url 失效
+            authentication-failure-url：
+                指定登录认证失败后跳转的页面
+                默认情况下登录失败后会返回登录页面
+                登录失败后跳转的页面，也需放行，否则又会被重定向到登录页面。
+            authentication-failure-handler-ref：
+                对应一个用于处理认证失败的 AuthenticationFailureHandler 实现类。
+                指定了该属性，Spring Security 在认证失败后会调用指定 AuthenticationFailureHandler 的 onAuthenticationFailure 方法对认证失败进行处理
+                此时 authentication-failure-url 属性将不再发生作用。
+            authentication-success-forward-url="/success.html"：登录认证成功后转发的页面success.html
+            authentication-failure-forward-url="/failure.html"：登录认证失败后的转发页面为failure.html
+        配置了转发后就不会走这个默认的url
+        -->
+        <headers>
+            <frame-options policy="SAMEORIGIN" />
+        </headers>
+        <form-login login-page="/login.jsp"
+                    login-processing-url="/user/login"
+                    authentication-details-source-ref="customAuthenticationDetailsSource"
+                    username-parameter="username"
+                    password-parameter="password"
+                    authentication-success-handler-ref="myAuthenticationSuccessHandler"
+                    authentication-failure-url="/login.jsp?error==true"
+        />
+                    <logout delete-cookies="JSESSIONID" logout-url="/login/logout"  invalidate-session="true" logout-success-url="/login.jsp"></logout>
+
+
+
+
+        <!--指定使用默认登出页面，登出后跳转到/login?logout页面-->
+        <!--<logout logout-success-url="/login?logout"/>-->
+        <!--指定登陆认证成功后，对于没有权限的页面跳转到/403路径-->
+        <!--<access-denied-handler error-page="/error/403"/>-->
+
+        <!--会话管理-->
+        <session-management session-fixation-protection="none">
+            <!--
+                max-sessions="1"：同一用户只能在一个浏览器登录，当尝试在其他浏览器登陆时将被拒绝
+                error-if-maximum-exceeded="true"：当设置了此属性，尝试在其他浏览器登录时，则原会话将被终止，将在新窗口建立新会话
+            -->
+            <concurrency-control max-sessions="1"/>
+        </session-management>
+
+        <!--关闭csrf跨域-->
+        <csrf disabled="true"/>
+        <!--注销登录-->
+        <!--<logout invalidate-session="true" logout-success-url="/login.html" logout-url="/logout"/>-->
+    </http>
+
+    <!--认证管理器-->
+    <authentication-manager id="authenticationManager">
+        <authentication-provider ref="loginAuthenticationProvider">
+<!--            <password-encoder ref="passwordEncoder"/>-->
+            <!--
+            <user-service>
+                <user name="admin" password="admin" authorities="ROLE_USER,ROLE_ADMIN"/>
+                <user name="ningdd" password="ningdd" authorities="ROLE_USER"/>
+            </user-service>
+            -->
+        </authentication-provider>
+    </authentication-manager>
+
+    <beans:bean id="passwordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"/>
+    <beans:bean id="userService" class="li.gen.serviceimpl.UserServiceImpl" >
+<!--        <intercept-methods>-->
+<!--            <protect access="ROLE_USER" method="find*"/>-->
+<!--        </intercept-methods>-->
+    </beans:bean>
+    <beans:bean id="loginAuthenticationProvider" class="li.gen.security.LoginAuthenticationProvider">
+        <beans:property name="userDetailsService" ref="userService"/>
+
+    </beans:bean>
+     <beans:bean id="myAuthenticationSuccessHandler" class="li.gen.security.MyAuthenticationSuccessHandler"/>
+    <beans:bean id="myAuthenticationFailureHandler" class="li.gen.security.MyAuthenticationFailureHander"/>
+     <beans:bean id="customAuthenticationDetailsSource" class="li.gen.security.CustomAuthenticationDetailsSource"/>
+<!--    <beans:bean id="customWebAuthenticationDetails" class="li.gen.security.CustomWebAuthenticationDetails"/>-->
+</beans:beans>

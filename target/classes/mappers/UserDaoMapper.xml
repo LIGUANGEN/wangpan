@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="li.gen.dao.UserDao">
+
+    <select id="findUserByName" resultType="User">
+      select  * from  user where username = #{name}
+	</select>
+    <select id="selectUserByName" resultType="User">
+      select  * from  user where username = #{name}
+	</select>
+    <select id="selectUserList" resultType="User">
+    select  * from  user
+    </select>
+    <update id="updateUserByUserName" >
+        update user set
+        username=#{user.username},
+        password=#{user.password},
+        age=#{user.age},
+        sex=#{user.sex},
+        tel=#{user.tel},
+        authority=#{user.authority}
+        <where>
+            username=#{user.username}
+        </where>
+    </update>
+    <insert id="addUser" >
+          insert into user(username,password,age,sex,tel,authority) values(
+         #{user.username},
+         #{user.password},
+         #{user.age},
+         #{user.sex},
+         #{user.tel},
+         #{user.authority}
+          )
+    </insert>
+    <delete id="deleteUser">
+        delete  from user
+        <where>
+            username=#{username}
+        </where>
+    </delete>
+
+    <insert id="registerUser" >
+          insert into user(username,password,age,sex,tel,authority) values(
+         #{user.username},
+         #{user.password},
+         #{user.age},
+         #{user.sex},
+         #{user.tel},
+         #{user.authority}
+          )
+    </insert>
+
+</mapper>

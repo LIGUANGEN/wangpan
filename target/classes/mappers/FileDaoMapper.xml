@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="li.gen.dao.FileDao">
+
+  <insert id="saveFile" parameterType="li.gen.entity.File">
+      insert into file values(
+      #{File.fileId},
+      #{File.fileName},
+      #{File.uploadAuthor},
+      #{File.fileType},
+      #{File.uploadTime}
+      )
+
+  </insert>
+<select id="findFileByFileId" resultType="li.gen.entity.File">
+    select * from file where fileId=#{fileId}
+</select>
+    <select id="selectFileByFileId" resultType="li.gen.entity.File">
+        select * from file
+        <where>
+            uploadAuthor=#{uploadAuthor}
+        </where>
+    </select>
+    <select id="findMaxFileId" resultType="int">
+        select IFNULL(Max(fileId),0) from file;
+    </select>
+    <delete id="deleteFile">
+      delete from file
+        <where>
+            fileId=#{fileId} and uploadAuthor=#{uploadAuthor}
+        </where>
+    </delete>
+    <select id="findFileNameByfileName" resultType="java.lang.String">
+        select fileName from file
+        <where>
+        fileName=#{fileName}
+        </where>
+     </select>
+</mapper>

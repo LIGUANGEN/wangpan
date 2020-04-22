@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd">
+    <!--开启扫描注解 只扫描controller  -->
+    <context:component-scan base-package="li.gen">
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+    </context:component-scan>
+
+
+    <!--配置视图解析器-->
+    <bean id="internalResourceViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/pages/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="DefaultEncoding" value="UTF-8" />
+        <property name="MaxUploadSize" value="1048576" />
+        <property name="MaxInMemorySize" value="4096"/>
+    </bean>
+<!--    <mvc:resources mapping="/bootstrap/**" location="/bootstrap/js/**"/>-->
+<!--    <mvc:resources mapping="/bootstrap/**" location="/bootstrap/css/**"/>-->
+<!--    <mvc:resources mapping="/bootstrap/**" location="/bootstrap/fonts/**"/>-->
+<!--    <mvc:resources mapping="/css/**" location="/css/**"/>-->
+<!--    <mvc:resources mapping="/image/**" location="/image/**"/>-->
+<!--    <mvc:resources mapping="/jQuery/**" location="/jQuery/**"/>-->
+<!--    <mvc:resources mapping="/javascript/**" location="/javascript/**"/>-->
+<!--    <mvc:resources mapping="/ligen/**" location="/ligen/**"/>-->
+
+    <!--开启springmvc注解的支持-->
+    <mvc:annotation-driven>
+        <!--  消息转换器  -->
+        <mvc:message-converters register-defaults="true">
+            <bean class="org.springframework.http.converter.StringHttpMessageConverter">
+                <property name="supportedMediaTypes" value="text/plain;charset=UTF-8"/>
+            </bean>
+        </mvc:message-converters>
+    </mvc:annotation-driven>
+</beans>
